@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">BLE Trial</string>
+
+    <!-- Universal -->
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">Okay</string>
+
+
+    <!-- DeviceScan Activity -->
+    <string name="scan_devices">Scan Devices</string>
+    <string name="click_above_to_scan">Click above button to scan for available devices</string>
+    <string name="scanning_text">Scanning for available devices…</string>
+    <string name="select_device_text">Select any device form the list</string>
+    <string name="no_device_found">No Device Found</string>
+    <string name="connection_attempt_failed">Connection Attempt Failed</string>
+    <string name="mac_address">Mac Address:</string>
+    <string name="manufacturer_number">Manufacturer Number:</string>
+    <string name="online_life_log">Online\nLife-Log</string>
+    <string name="start_online_gym">Start Online\nGym</string>
+    <string name="stop_online_gym">Stop Online\nGym</string>
+    <string name="service_name">Service Name</string>
+    <string name="service_value">Service Value</string>
+    <string name="get_services">Get Services</string>
+    <string name="aa0055aa">AA0055AA</string>
+    <string name="execute">Execute</string>
+    <string name="select_channel">Select Channel: </string>
+    <string name="invalid_frame">Invalid Frame</string>
+    <string name="enter_frame">Enter Frame:</string>
+    <string name="cannot_be_blank">Frame cannot be blank</string>
+    <string name="device_name">Device Name</string>
+    <string name="dash">--</string>
+    <string name="calls">Calls</string>
+    <string name="sms">SMS</string>
+
+    <string-array name="channel_array">
+        <item>Gym</item> // Gym
+        <item>Offline LifeLog</item> // Offline LifeLog, Sleep
+        <item>Summary</item> // Summary
+        <item>Online LifeLog</item> // Online LifeLog
+    </string-array>
+
+
+</resources>
