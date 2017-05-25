@@ -1,6 +1,7 @@
 package com.nikhil.bletrial.ui.activities;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanResult;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -83,6 +85,7 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
     DeviceScanPresenter deviceScanPresenter;
     String deviceMac;
     GoogleApiClient googleApiClient;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,6 +96,7 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
         deviceScanPresenter = new DeviceScanPresenter(this, this);
         bluetoothAdapter = BluetoothAdapterSingleton.getAdapter();
         deviceList_ListView.setOnItemClickListener(this);
+        progressDialog = new ProgressDialog(this);
     }
 
     @Override
@@ -134,9 +138,9 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
             }
         }
 
-        if (checkStoragePermission()){
+        if (checkStoragePermission()) {
             File file = new File(Environment.getExternalStorageDirectory(), ACTOFIT_FOLDER);
-            if (!file.exists()){
+            if (!file.exists()) {
                 Log.d(AppConstants.TAG, "onResume: " + file.mkdir());
             }
         }
@@ -193,7 +197,7 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
                 break;
 
             case PERMISSION_REQUEST_WRITE_STORAGE:
-                if (resultCode != RESULT_OK){
+                if (resultCode != RESULT_OK) {
                     Toast.makeText(this, "Requires storage permissions to save data.", Toast.LENGTH_LONG).show();
                     finish();
                 }
@@ -203,6 +207,7 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
 
     @Override
     public void onListLoadedSuccessfully(HashMap<String, ScanResult> hashMap) {
+        progressDialog.dismiss();
         scanDevice_Button.setClickable(true);
         scanning_text.setText(R.string.select_device_text);
         deviceList_ListView.setAdapter(new DeviceListViewAdapter(this, hashMap));
@@ -214,6 +219,7 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
         scanDevice_Button.setClickable(true);
         switch (FAILURE_CODE) {
             case SCAN_FAILED:
+                progressDialog.dismiss();
                 scanning_text.setText(R.string.no_device_found);
                 deviceList_ListView.setVisibility(View.GONE);
                 break;
@@ -230,6 +236,12 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
         scanning_text.setText(R.string.scanning_text);
         deviceScanPresenter.initiateScanProcess(bluetoothAdapter);
         //deviceList_ListView.setVisibility(View.GONE);
+
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage("Scanning For Devices...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
     }
 
     @Override
@@ -239,7 +251,7 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
         String manufacturerID = new ManufacturerId().getManufacturerId(scanResult);
         Log.d(AppConstants.TAG, "onItemClick: " + manufacturerID);
 
-        if (manufacturerID.trim().startsWith("0476")){
+        if (manufacturerID.trim().startsWith("0476")) {
             BLEInteractor.DEVICE_MAC = device.getAddress();
             deviceScanPresenter.connectDevice(scanResult.getDevice());
 

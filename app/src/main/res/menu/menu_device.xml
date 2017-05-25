@@ -3,11 +3,14 @@
 
     <group>
         <item
-            android:id="calls_notifications"
+            android:id="@+id/profile_options"
+            android:title="@string/profile" />
+        <item
+            android:id="@+id/call_notifications"
             android:checkable="true"
             android:title="@string/calls" />
         <item
-            android:id="sms_notifications"
+            android:id="@+id/sms_notifications"
             android:checkable="true"
             android:title="@string/sms" />
     </group>

@@ -28,6 +28,7 @@ public interface AppConstants {
         int PERMISSION_REQUEST_CALL_ACCESS = 103;
         int PERMISSION_REQUEST_SMS_ACCESS = 104;
         int PERMISSION_REQUEST_CALENDER_ACCESS = 105;
+        int PERMISSION_REQUEST_CONTACTS_ACCESS = 106;
     }
 
 }

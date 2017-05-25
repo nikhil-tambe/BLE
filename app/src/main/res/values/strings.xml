@@ -34,6 +34,7 @@
     <string name="dash">--</string>
     <string name="calls">Calls</string>
     <string name="sms">SMS</string>
+    <string name="profile">Profile</string>
 
     <string-array name="channel_array">
         <item>Gym</item> // Gym

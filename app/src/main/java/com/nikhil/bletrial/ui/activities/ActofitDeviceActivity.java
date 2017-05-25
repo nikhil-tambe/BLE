@@ -46,7 +46,10 @@ import butterknife.OnClick;
 import static com.nikhil.bletrial.app.AppConstants.IntentKeys.KEY_DEVICE_MAC;
 import static com.nikhil.bletrial.app.AppConstants.IntentKeys.KEY_DEVICE_MANUFACTURER_ID;
 import static com.nikhil.bletrial.app.AppConstants.IntentKeys.KEY_DEVICE_NAME;
+import static com.nikhil.bletrial.app.AppConstants.PermissionRequests.PERMISSION_REQUEST_CALENDER_ACCESS;
+import static com.nikhil.bletrial.app.AppConstants.PermissionRequests.PERMISSION_REQUEST_CALL_ACCESS;
 import static com.nikhil.bletrial.app.AppConstants.PermissionRequests.PERMISSION_REQUEST_COARSE_LOCATION;
+import static com.nikhil.bletrial.app.AppConstants.PermissionRequests.PERMISSION_REQUEST_CONTACTS_ACCESS;
 import static com.nikhil.bletrial.app.AppConstants.PermissionRequests.PERMISSION_REQUEST_SMS_ACCESS;
 import static com.nikhil.bletrial.app.AppConstants.SharedPreferences.SPF_DEVICE;
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_GYM_OFFLINE_READ;
@@ -97,6 +100,7 @@ public class ActofitDeviceActivity extends AppCompatActivity implements IActofit
     ActofitDevicePresenter presenter;
     String deviceName, deviceMac, deviceManufacturerId;
     BluetoothDevice device;
+    private boolean isDeviceConnected = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -123,14 +127,13 @@ public class ActofitDeviceActivity extends AppCompatActivity implements IActofit
         deviceManufacturer_TextView.setText(manufacturerString);
         setSpinner();
 
-        presenter.initializeChart(accelerometer_LineChart);
-        presenter.initializeChart(gyroscope_LineChart);
+        //presenter.initializeChart(accelerometer_LineChart);
+        //presenter.initializeChart(gyroscope_LineChart);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        bluetoothAdapter = BluetoothAdapterSingleton.getAdapter();
         if (bluetoothAdapter == null) {
             Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBT, ENABLE_BT_REQUEST);
@@ -139,9 +142,22 @@ public class ActofitDeviceActivity extends AppCompatActivity implements IActofit
             connectDevice(bluetoothAdapter);
         }
 
-        if (permissionAllowed(Manifest.permission.RECEIVE_SMS, PERMISSION_REQUEST_SMS_ACCESS)){
-            Toast.makeText(this, "SMS", Toast.LENGTH_SHORT).show();
+        if (permissionAllowed(Manifest.permission.READ_CONTACTS, PERMISSION_REQUEST_CONTACTS_ACCESS)){
+            //Toast.makeText(this, "Contacts", Toast.LENGTH_SHORT).show();
         }
+
+        if (permissionAllowed(Manifest.permission.RECEIVE_SMS, PERMISSION_REQUEST_SMS_ACCESS)){
+            //Toast.makeText(this, "SMS", Toast.LENGTH_SHORT).show();
+        }
+
+        if (permissionAllowed(Manifest.permission.READ_PHONE_STATE, PERMISSION_REQUEST_CALL_ACCESS)){
+            //Toast.makeText(this, "Calls", Toast.LENGTH_SHORT).show();
+        }
+
+        if (permissionAllowed(Manifest.permission.READ_CALENDAR, PERMISSION_REQUEST_CALENDER_ACCESS)){
+            //Toast.makeText(this, "Calender", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Override
@@ -170,7 +186,6 @@ public class ActofitDeviceActivity extends AppCompatActivity implements IActofit
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case ENABLE_BT_REQUEST:
-                bluetoothAdapter = BluetoothAdapterSingleton.getAdapter();
                 connectDevice(bluetoothAdapter);
                 break;
 
@@ -180,6 +195,31 @@ public class ActofitDeviceActivity extends AppCompatActivity implements IActofit
                 } else {
                     Toast.makeText(this, "SMS Access Denied", Toast.LENGTH_SHORT).show();
                 }
+                break;
+
+            case PERMISSION_REQUEST_CALL_ACCESS:
+                if (resultCode == RESULT_OK){
+                    Toast.makeText(this, "Call Access Allowed", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Call Access Denied", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case PERMISSION_REQUEST_CALENDER_ACCESS:
+                if (resultCode == RESULT_OK){
+                    Toast.makeText(this, "Calender Access Allowed", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Calender Access Denied", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case PERMISSION_REQUEST_CONTACTS_ACCESS:
+                if (resultCode == RESULT_OK){
+                    Toast.makeText(this, "Contacts Access Allowed", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Contacts Access Denied", Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
     }
 
@@ -211,13 +251,23 @@ public class ActofitDeviceActivity extends AppCompatActivity implements IActofit
         finish();
     }
 
+    @OnClick(R.id.connectivityIndication_ImageView)
+    public void indicatorClick(){
+        if (!isDeviceConnected){
+            connectivityIndication_ImageView.setBackgroundResource(R.drawable.dot_orange);
+            connectDevice(bluetoothAdapter);
+        }
+    }
+
     @Override
     public void deviceConnected() {
+        isDeviceConnected = true;
         connectivityIndication_ImageView.setBackgroundResource(R.drawable.dot_green);
     }
 
     @Override
     public void deviceDisconnected() {
+        isDeviceConnected = false;
         connectivityIndication_ImageView.setBackgroundResource(R.drawable.dot_red);
     }
 
@@ -240,6 +290,9 @@ public class ActofitDeviceActivity extends AppCompatActivity implements IActofit
     }
 
     private void connectDevice(BluetoothAdapter adapter) {
+        if (adapter == null){
+            adapter = BluetoothAdapterSingleton.getAdapter();
+        }
         device = adapter.getRemoteDevice(deviceMac);
         if (device != null) {
             presenter.connnectDevice(device);
@@ -254,21 +307,6 @@ public class ActofitDeviceActivity extends AppCompatActivity implements IActofit
             if (this.checkSelfPermission(permissionName)
                     != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{permissionName}, requestCode);
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return true;
-        }
-    }
-
-    private boolean checkForSMSAlerts() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (this.checkSelfPermission(Manifest.permission.READ_SMS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_SMS},
-                        PERMISSION_REQUEST_SMS_ACCESS);
                 return false;
             } else {
                 return true;

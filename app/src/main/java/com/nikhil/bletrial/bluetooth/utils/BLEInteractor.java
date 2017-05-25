@@ -71,8 +71,7 @@ public class BLEInteractor {
 
     FileWriter csvFileWriter;
     private Context context;
-    private static OnBLEInteractorFinishedListener listener;
-    private Handler handler;
+    private OnBLEInteractorFinishedListener listener;
     private BluetoothLeScanner bluetoothLeScanner;
     private ScanSettings scanSettings;
     private List<ScanFilter> scanFilterList;
@@ -120,20 +119,20 @@ public class BLEInteractor {
             listener.connectionState(newState);
             switch (newState) {
                 case BluetoothProfile.STATE_CONNECTED:
-                    //Log.d(TAG, "onConnectionStateChange: STATE_CONNECTED");
+                    Log.d(TAG, "onConnectionStateChange: STATE_CONNECTED");
                     gatt.discoverServices();
-                    /*if (wasDisconnected && fromGym){
-                        executeCommand();
-                    }*/
+                    if (wasDisconnected && fromGym){
+                        executeCommand(COMMAND_GYM_ONLINE_START, bytes);
+                    }
                     break;
 
                 case BluetoothProfile.STATE_DISCONNECTED:
-                    //wasDisconnected = true;
-                    //Log.d(TAG, "onConnectionStateChange: STATE_DISCONNECTED");
+                    wasDisconnected = true;
+                    Log.d(TAG, "onConnectionStateChange: STATE_DISCONNECTED");
                     break;
 
                 default:
-                    Log.d(TAG, "onConnectionStateChange: " + newState);
+                    Log.d(TAG, "onConnectionStateChange: newState: " + newState);
                     break;
             }
         }
@@ -178,8 +177,7 @@ public class BLEInteractor {
 
     public BLEInteractor(OnBLEInteractorFinishedListener listener, Context context) {
         this.context = context;
-        BLEInteractor.listener = listener;
-        handler = new Handler();
+        this.listener = listener;
     }
 
     private void notifyBLE(BluetoothGattCharacteristic notifyCharacteristic, boolean enable) {
@@ -212,7 +210,7 @@ public class BLEInteractor {
 
     public void scanLeDevice(final boolean enable) {
         if (enable) {
-            handler.postDelayed(new Runnable() {
+            new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     bluetoothLeScanner.stopScan(scanCallback);
