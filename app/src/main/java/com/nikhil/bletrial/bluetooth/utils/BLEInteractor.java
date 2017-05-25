@@ -38,13 +38,17 @@ import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_G
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_GYM_ONLINE_START;
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_LIFE_LOG_OFFLINE_READ;
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_LIFE_LOG_ONLINE_START;
+import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_SESSION_COUNT;
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_SLEEP_READ;
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.SCAN_FAILED;
 import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.CHAR_NOTIFY_GYM;
 import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.CHAR_NOTIFY_OFFLINE_LIFE_LOG;
 import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.CHAR_NOTIFY_ONLINE_LIFE_LOG;
+import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.CHAR_NOTIFY_WALK;
+import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.UUID_CHAR_FIRMWARE_REVISION;
 import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.UUID_CHAR_WRITE;
 import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.UUID_CLIENT_CONFIG;
+import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.UUID_SERVICE_DEVICE_INFORMATION;
 import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.UUID_SERVICE_WORKOUT;
 
 /**
@@ -57,16 +61,17 @@ public class BLEInteractor {
     public static String DEVICE_MAC = "mac";
     private static BluetoothGatt bluetoothGatt;
     private static HashMap<String, String> notifyCharacteristics = new HashMap<>();
-    //private int COMMAND = 5;
     private static String CHANNEL = "";
     private static String filePath;
+    public static String FIRMWARE_VERSION;
 
     static {
-        notifyCharacteristics.put(COMMAND_GYM_ONLINE_START, CHAR_NOTIFY_GYM);
-        notifyCharacteristics.put(COMMAND_GYM_OFFLINE_READ, CHAR_NOTIFY_GYM);
-        notifyCharacteristics.put(COMMAND_LIFE_LOG_ONLINE_START, CHAR_NOTIFY_ONLINE_LIFE_LOG);
-        notifyCharacteristics.put(COMMAND_LIFE_LOG_OFFLINE_READ, CHAR_NOTIFY_OFFLINE_LIFE_LOG);
-        notifyCharacteristics.put(COMMAND_SLEEP_READ, CHAR_NOTIFY_OFFLINE_LIFE_LOG);
+        notifyCharacteristics.put(COMMAND_GYM_ONLINE_START, CHAR_NOTIFY_GYM);                       // 4
+        notifyCharacteristics.put(COMMAND_GYM_OFFLINE_READ, CHAR_NOTIFY_GYM);                       // 4
+        notifyCharacteristics.put(COMMAND_LIFE_LOG_ONLINE_START, CHAR_NOTIFY_ONLINE_LIFE_LOG);      // 11
+        notifyCharacteristics.put(COMMAND_LIFE_LOG_OFFLINE_READ, CHAR_NOTIFY_OFFLINE_LIFE_LOG);     // 9
+        notifyCharacteristics.put(COMMAND_SLEEP_READ, CHAR_NOTIFY_OFFLINE_LIFE_LOG);                // 9
+        notifyCharacteristics.put(COMMAND_SESSION_COUNT, CHAR_NOTIFY_WALK);                         // 6
     }
 
     FileWriter csvFileWriter;
@@ -103,6 +108,7 @@ public class BLEInteractor {
         }
     };
     private File rawFile;
+    ParseBytes parseBytes;
     /**
      * device.connectGatt(context, false, gattCallBack) refers to this gattCallBack.
      * <p>
@@ -116,7 +122,6 @@ public class BLEInteractor {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
-            listener.connectionState(newState);
             switch (newState) {
                 case BluetoothProfile.STATE_CONNECTED:
                     Log.d(TAG, "onConnectionStateChange: STATE_CONNECTED");
@@ -135,14 +140,27 @@ public class BLEInteractor {
                     Log.d(TAG, "onConnectionStateChange: newState: " + newState);
                     break;
             }
+            listener.connectionState(newState);
         }
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             /*List<BluetoothGattService> gattServiceList = bluetoothGatt.getServices();
             listener.servicesDiscovered(gattServiceList);*/
-
+            Log.d(TAG, "onServicesDiscovered: ");
+            BluetoothGattCharacteristic characteristic = gatt.getService(UUID_SERVICE_DEVICE_INFORMATION)
+                    .getCharacteristic(UUID_CHAR_FIRMWARE_REVISION);
+            gatt.readCharacteristic(characteristic);
             bluetoothGatt = gatt;
+            /*new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "run: called");
+                    checkBytes(COMMAND_GYM_ONLINE_START, "AA0055AA");
+                }
+            }, 5000);*/
+
+            // 17:28:57 => 17:46:20
 
             /*Log.d(TAG, "onServicesDiscovered: **************** UUIDs for services ***************");
             for (BluetoothGattService s : gatt.getServices()) {
@@ -160,10 +178,10 @@ public class BLEInteractor {
             Log.d(TAG, "onCharacteristicRead: " + characteristic.getValue());
 
             if (status == GATT_SUCCESS) {
-                /*if (characteristic.getUuid().toString().equalsIgnoreCase(CHAR_MODEL_NUMBER_STRING)) {
-                    Log.d(TAG, "onCharacteristicRead: MODEL NUMBER: "
-                            + characteristic.getStringValue(0));
-                } */
+                if (characteristic.getUuid().equals(UUID_CHAR_FIRMWARE_REVISION)) {
+                    FIRMWARE_VERSION = characteristic.getStringValue(0);
+                    Log.d(TAG, "onCharacteristicRead: Firmware Version: " + FIRMWARE_VERSION);
+                }
             }
         }
 
@@ -248,7 +266,7 @@ public class BLEInteractor {
                 new SimpleDateFormat("yyyyMMddkkmmss", Locale.ENGLISH).format(new Date()) + ".csv";
         CHANNEL = channel;
         Log.d(TAG, "executeCommand: " + CHANNEL);
-        //parseBytes = new ParseBytes(channel);
+        parseBytes = new ParseBytes(channel);
 
         if (bluetoothGatt != null) {
             BluetoothGattService service = bluetoothGatt.getService(UUID_SERVICE_WORKOUT);
@@ -286,7 +304,7 @@ public class BLEInteractor {
                 stringBuilder.append(String.format("%02X ", byteChar));
             }
             String frame = stringBuilder.toString();
-            String formatted = new ParseBytes().getParsedBytes(CHANNEL, frame);
+            String formatted = parseBytes.getParsedBytes(frame);
 
             //Log.d(TAG, "rawData: " + CHANNEL + " : " + frame);
             listener.onDataReceived(frame, formatted);

@@ -56,6 +56,7 @@ import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_G
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_GYM_ONLINE_START;
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_LIFE_LOG_OFFLINE_READ;
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_LIFE_LOG_ONLINE_START;
+import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_SESSION_COUNT;
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_SLEEP_READ;
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.ENABLE_BT_REQUEST;
 
@@ -348,6 +349,7 @@ public class ActofitDeviceActivity extends AppCompatActivity implements IActofit
         list.add(COMMAND_LIFE_LOG_ONLINE_START);
         list.add(COMMAND_LIFE_LOG_OFFLINE_READ);
         list.add(COMMAND_SLEEP_READ);
+        list.add(COMMAND_SESSION_COUNT);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, list);

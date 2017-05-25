@@ -39,7 +39,7 @@ public interface GattAttributes {
     //String CHAR_WRITE_BLANK                 = "6e40000a-b5a3-f393-e0a9-e50e24dcca9e";
     String CHAR_NOTIFY_GYM                  = "6e400004-b5a3-f393-e0a9-e50e24dcca9e";
     //String CHAR_NOTIFY_RUN                  = "6e400005-b5a3-f393-e0a9-e50e24dcca9e";
-    //String CHAR_NOTIFY_WALK                 = "6e400006-b5a3-f393-e0a9-e50e24dcca9e";
+    String CHAR_NOTIFY_WALK                 = "6e400006-b5a3-f393-e0a9-e50e24dcca9e";
     //String CHAR_NOTIFY_SPORTS               = "6e400008-b5a3-f393-e0a9-e50e24dcca9e";
     String CHAR_NOTIFY_OFFLINE_LIFE_LOG     = "6e400009-b5a3-f393-e0a9-e50e24dcca9e";
     //String CHAR_NOTIFY_SUMMARY              = "6e400010-b5a3-f393-e0a9-e50e24dcca9e";
@@ -49,11 +49,13 @@ public interface GattAttributes {
     // UUIDs
     UUID UUID_CLIENT_CONFIG                 = UUID.fromString(CLIENT_CHARACTERISTIC_CONFIG);
     UUID UUID_SERVICE_WORKOUT               = UUID.fromString(SERVICE_Rx);
-
     UUID UUID_CHAR_WRITE                    = UUID.fromString(CHAR_WRITE);
     //UUID UUID_CHAR_ONLINE_LIFE_LOG          = UUID.fromString(CHAR_NOTIFY_ONLINE_LIFE_LOG);
     //UUID UUID_CHAR_WRITE_BLANK              = UUID.fromString(CHAR_WRITE_BLANK);
     //UUID UUID_CHAR_NOTIFY_GYM               = UUID.fromString(CHAR_NOTIFY_GYM);
     //UUID UUID_CHAR_SUMMARY                  = UUID.fromString(CHAR_NOTIFY_SUMMARY);
+
+    UUID UUID_SERVICE_DEVICE_INFORMATION    = UUID.fromString(SERVICE_DEVICE_INFORMATION);
+    UUID UUID_CHAR_FIRMWARE_REVISION        = UUID.fromString(CHAR_FIRMWARE_REVISION);
 
 }
