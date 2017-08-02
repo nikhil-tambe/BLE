@@ -20,7 +20,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,7 +56,7 @@ import static com.nikhil.bletrial.app.AppConstants.IntentKeys.KEY_DEVICE_NAME;
 import static com.nikhil.bletrial.app.AppConstants.PermissionRequests.PERMISSION_REQUEST_COARSE_LOCATION;
 import static com.nikhil.bletrial.app.AppConstants.PermissionRequests.PERMISSION_REQUEST_WRITE_STORAGE;
 import static com.nikhil.bletrial.app.AppConstants.SharedPreferences.SPF_DEVICE;
-import static com.nikhil.bletrial.app.AppConstants.Storage.ACTOFIT_FOLDER;
+import static com.nikhil.bletrial.app.AppConstants.Storage.A_FOLDER;
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.CONNECTION_ATTEMPT_FAILED;
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.ENABLE_BT_REQUEST;
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.SCAN_FAILED;
@@ -126,7 +125,7 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
                     BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceMac);
                     if (device != null) {
                         deviceScanPresenter.connectDevice(device);
-                        startActivity(new Intent(this, ActofitDeviceActivity.class));
+                        startActivity(new Intent(this, DeviceActivity.class));
                         finish();
                     } else {
                         scanForBleDevice();
@@ -139,7 +138,7 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
         }
 
         if (checkStoragePermission()) {
-            File file = new File(Environment.getExternalStorageDirectory(), ACTOFIT_FOLDER);
+            File file = new File(Environment.getExternalStorageDirectory(), A_FOLDER);
             if (!file.exists()) {
                 Log.d(AppConstants.TAG, "onResume: " + file.mkdir());
             }
@@ -262,7 +261,7 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
             editor.putString(KEY_DEVICE_MANUFACTURER_ID, manufacturerID);
             editor.apply();
 
-            startActivity(new Intent(this, ActofitDeviceActivity.class)
+            startActivity(new Intent(this, DeviceActivity.class)
                     .putExtra(KEY_DEVICE_NAME, device.getName())
                     .putExtra(KEY_DEVICE_MAC, device.getAddress())
                     .putExtra(KEY_DEVICE_MANUFACTURER_ID, manufacturerID)

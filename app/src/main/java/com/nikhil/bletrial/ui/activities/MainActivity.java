@@ -1,7 +1,5 @@
 package com.nikhil.bletrial.ui.activities;
 
-import android.bluetooth.BluetoothManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -12,13 +10,9 @@ import android.widget.Toast;
 
 import com.nikhil.bletrial.R;
 
-import java.io.File;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static com.nikhil.bletrial.app.AppConstants.Storage.ACTOFIT_FOLDER;
 
 public class MainActivity extends AppCompatActivity {
 

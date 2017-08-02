@@ -12,13 +12,9 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,8 +28,8 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.nikhil.bletrial.R;
-import com.nikhil.bletrial.bluetooth.device.ActofitDevicePresenter;
-import com.nikhil.bletrial.bluetooth.device.IActofitDeviceView;
+import com.nikhil.bletrial.bluetooth.device.DevicePresenter;
+import com.nikhil.bletrial.bluetooth.device.IDeviceView;
 import com.nikhil.bletrial.bluetooth.utils.BluetoothAdapterSingleton;
 
 import java.util.ArrayList;
@@ -48,7 +44,6 @@ import static com.nikhil.bletrial.app.AppConstants.IntentKeys.KEY_DEVICE_MANUFAC
 import static com.nikhil.bletrial.app.AppConstants.IntentKeys.KEY_DEVICE_NAME;
 import static com.nikhil.bletrial.app.AppConstants.PermissionRequests.PERMISSION_REQUEST_CALENDER_ACCESS;
 import static com.nikhil.bletrial.app.AppConstants.PermissionRequests.PERMISSION_REQUEST_CALL_ACCESS;
-import static com.nikhil.bletrial.app.AppConstants.PermissionRequests.PERMISSION_REQUEST_COARSE_LOCATION;
 import static com.nikhil.bletrial.app.AppConstants.PermissionRequests.PERMISSION_REQUEST_CONTACTS_ACCESS;
 import static com.nikhil.bletrial.app.AppConstants.PermissionRequests.PERMISSION_REQUEST_SMS_ACCESS;
 import static com.nikhil.bletrial.app.AppConstants.SharedPreferences.SPF_DEVICE;
@@ -64,7 +59,7 @@ import static com.nikhil.bletrial.bluetooth.utils.BTConstants.ENABLE_BT_REQUEST;
  * Created by nikhil on 05/04/17.
  */
 
-public class ActofitDeviceActivity extends AppCompatActivity implements IActofitDeviceView {
+public class DeviceActivity extends AppCompatActivity implements IDeviceView {
 
     /**
      * Views from layout
@@ -98,7 +93,7 @@ public class ActofitDeviceActivity extends AppCompatActivity implements IActofit
      * Objects
      */
     BluetoothAdapter bluetoothAdapter;
-    ActofitDevicePresenter presenter;
+    DevicePresenter presenter;
     String deviceName, deviceMac, deviceManufacturerId;
     BluetoothDevice device;
     private boolean isDeviceConnected = false;
@@ -106,13 +101,13 @@ public class ActofitDeviceActivity extends AppCompatActivity implements IActofit
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_actofit_device);
+        setContentView(R.layout.activity_access_device);
         ButterKnife.bind(this);
 
         /*service_list = (RecyclerView) findViewById(R.id.service_list);
         service_list.setLayoutManager(new LinearLayoutManager(this));*/
 
-        presenter = new ActofitDevicePresenter(this, this);
+        presenter = new DevicePresenter(this, this);
         bluetoothAdapter = BluetoothAdapterSingleton.getAdapter();
 
         SharedPreferences spf_device = getSharedPreferences(SPF_DEVICE, MODE_PRIVATE);

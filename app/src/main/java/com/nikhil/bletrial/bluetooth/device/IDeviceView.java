@@ -9,7 +9,7 @@ import java.util.Objects;
  * Created by nikhil on 05/04/17.
  */
 
-public interface IActofitDeviceView {
+public interface IDeviceView {
 
     void deviceConnected();
     void deviceDisconnected();

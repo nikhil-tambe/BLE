@@ -32,7 +32,7 @@ import java.util.UUID;
 
 import static android.bluetooth.BluetoothGatt.GATT_SUCCESS;
 import static android.bluetooth.BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE;
-import static com.nikhil.bletrial.app.AppConstants.Storage.ACTOFIT_FOLDER;
+import static com.nikhil.bletrial.app.AppConstants.Storage.A_FOLDER;
 import static com.nikhil.bletrial.app.AppConstants.TAG;
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_GYM_OFFLINE_READ;
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_GYM_ONLINE_START;
@@ -259,7 +259,7 @@ public class BLEInteractor {
     }
 
     private void executeCommand(String channel, byte[] bytes) {
-        filePath = ACTOFIT_FOLDER + "/" + channel.replace(" ", "_");
+        filePath = A_FOLDER + "/" + channel.replace(" ", "_");
         File folder = new File(Environment.getExternalStorageDirectory() + filePath);
         folder.mkdir();
         filePath = filePath + "/" +

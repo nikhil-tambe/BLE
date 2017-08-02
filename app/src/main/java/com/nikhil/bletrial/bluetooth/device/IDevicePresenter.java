@@ -6,7 +6,7 @@ import android.bluetooth.BluetoothDevice;
  * Created by nikhil on 05/04/17.
  */
 
-public interface IActofitDevicePresenter {
+public interface IDevicePresenter {
 
     void connnectDevice(BluetoothDevice device);
     void sendCommand(BluetoothDevice device, int command);

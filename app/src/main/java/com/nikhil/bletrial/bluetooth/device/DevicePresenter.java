@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
@@ -15,7 +14,6 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.nikhil.bletrial.app.AppConstants;
 import com.nikhil.bletrial.bluetooth.utils.BLEInteractor;
 import com.nikhil.bletrial.bluetooth.utils.OnBLEInteractorFinishedListener;
 
@@ -23,20 +21,18 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.google.android.gms.internal.zzt.TAG;
-
 /**
  * Created by nikhil on 05/04/17.
  */
 
-public class ActofitDevicePresenter implements IActofitDevicePresenter, OnBLEInteractorFinishedListener {
+public class DevicePresenter implements IDevicePresenter, OnBLEInteractorFinishedListener {
 
     private BLEInteractor interactor;
-    private WeakReference<IActofitDeviceView> view;
+    private WeakReference<IDeviceView> view;
     private Context context;
 
-    public ActofitDevicePresenter(IActofitDeviceView view, Context context) {
-        this.view = new WeakReference<IActofitDeviceView>(view);
+    public DevicePresenter(IDeviceView view, Context context) {
+        this.view = new WeakReference<IDeviceView>(view);
         this.context = context;
         interactor = new BLEInteractor(this, context);
     }
@@ -95,7 +91,7 @@ public class ActofitDevicePresenter implements IActofitDevicePresenter, OnBLEInt
 
     @Override
     public void onDataReceived(String raw, String formatted) {
-        //Log.d(AppConstants.TAG, "ActofitDevicePresenter: onDataReceived: " + raw);
+        //Log.d(AppConstants.TAG, "DevicePresenter: onDataReceived: " + raw);
         if (view.get() != null) {
             view.get().onDataReceived(raw, formatted);
         }

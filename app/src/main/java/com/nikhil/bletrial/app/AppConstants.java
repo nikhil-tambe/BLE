@@ -19,7 +19,7 @@ public interface AppConstants {
     }
 
     interface Storage {
-        String ACTOFIT_FOLDER = "/Actofit";
+        String A_FOLDER = "/A";
     }
 
     interface PermissionRequests {

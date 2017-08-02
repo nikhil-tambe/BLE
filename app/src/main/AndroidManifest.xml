@@ -43,7 +43,7 @@
             android:name=".ui.activities.DeviceScanActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.activities.ActofitDeviceActivity"
+            android:name=".ui.activities.DeviceActivity"
             android:screenOrientation="portrait" />
 
         <!-- Notifications Receiver -->
