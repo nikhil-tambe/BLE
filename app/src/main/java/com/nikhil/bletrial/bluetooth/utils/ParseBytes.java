@@ -24,7 +24,6 @@ class ParseBytes {
     }
 
     String getParsedBytes(String frame) {
-        //Log.d(TAG, "rawData: " + channel + ": " + frame);
         String parsedFrame = "";
 
         switch (COMMAND) {
@@ -53,7 +52,7 @@ class ParseBytes {
                 parsedFrame = sessionCountToDecimal(frame);
         }
         Log.d(TAG, "rawData: " + COMMAND + ": " + frame);
-        Log.d(TAG, "parsedFrame: " + /*channel +*/ " : " + parsedFrame);
+        Log.d(TAG, "parsedFrame: " + parsedFrame);
         return parsedFrame;
     }
 

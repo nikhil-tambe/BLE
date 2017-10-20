@@ -16,7 +16,8 @@ public class BluetoothAdapterSingleton {
 
     public static BluetoothAdapter getAdapter() {
         if (adapter == null){
-            BluetoothManager manager = (BluetoothManager) ApplicationClass.getInstance().getSystemService(Context.BLUETOOTH_SERVICE);
+            BluetoothManager manager = (BluetoothManager) ApplicationClass.getInstance()
+                    .getSystemService(Context.BLUETOOTH_SERVICE);
             return manager.getAdapter();
         }
         return adapter;
