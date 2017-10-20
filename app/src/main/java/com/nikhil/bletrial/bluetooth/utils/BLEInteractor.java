@@ -63,7 +63,7 @@ public class BLEInteractor {
     private static HashMap<String, String> notifyCharacteristics = new HashMap<>();
     private static String CHANNEL = "";
     private static String filePath;
-    public static String FIRMWARE_VERSION;
+    static String FIRMWARE_VERSION;
 
     static {
         notifyCharacteristics.put(COMMAND_GYM_ONLINE_START, CHAR_NOTIFY_GYM);                       // 4
