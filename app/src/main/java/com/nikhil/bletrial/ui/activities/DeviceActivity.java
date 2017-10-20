@@ -138,7 +138,7 @@ public class DeviceActivity extends AppCompatActivity implements IDeviceView {
             connectDevice(bluetoothAdapter);
         }
 
-        if (permissionAllowed(Manifest.permission.READ_CONTACTS, PERMISSION_REQUEST_CONTACTS_ACCESS)){
+        /*if (permissionAllowed(Manifest.permission.READ_CONTACTS, PERMISSION_REQUEST_CONTACTS_ACCESS)){
             //Toast.makeText(this, "Contacts", Toast.LENGTH_SHORT).show();
         }
 
@@ -152,7 +152,7 @@ public class DeviceActivity extends AppCompatActivity implements IDeviceView {
 
         if (permissionAllowed(Manifest.permission.READ_CALENDAR, PERMISSION_REQUEST_CALENDER_ACCESS)){
             //Toast.makeText(this, "Calender", Toast.LENGTH_SHORT).show();
-        }
+        }*/
 
     }
 
@@ -170,12 +170,12 @@ public class DeviceActivity extends AppCompatActivity implements IDeviceView {
         super.onDestroy();
     }
 
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_device, menu);
         return true;
-    }
+    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -185,7 +185,7 @@ public class DeviceActivity extends AppCompatActivity implements IDeviceView {
                 connectDevice(bluetoothAdapter);
                 break;
 
-            case PERMISSION_REQUEST_SMS_ACCESS:
+            /*case PERMISSION_REQUEST_SMS_ACCESS:
                 if (resultCode == RESULT_OK){
                     Toast.makeText(this, "SMS Access Allowed", Toast.LENGTH_SHORT).show();
                 } else {
@@ -215,7 +215,8 @@ public class DeviceActivity extends AppCompatActivity implements IDeviceView {
                 } else {
                     Toast.makeText(this, "Contacts Access Denied", Toast.LENGTH_SHORT).show();
                 }
-                break;
+                break;*/
+
         }
     }
 
