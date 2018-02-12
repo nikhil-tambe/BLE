@@ -45,6 +45,9 @@
         <activity
             android:name=".ui.activities.DeviceActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".v1.RepCountActivity"
+            android:screenOrientation="portrait" />
 
         <!-- Notifications Receiver -->
         <receiver android:name=".notifications.NotificationsReceiver">
@@ -55,6 +58,7 @@
             </intent-filter>
         </receiver>
 
+        <service android:name=".v1.WatchConnectivityService" />
     </application>
 
 </manifest>

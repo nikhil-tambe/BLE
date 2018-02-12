@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <group>
+    <item
+        android:id="@+id/disconnectDevice"
+        app:showAsAction="always"
+        android:title="disconnect" />
+
+    <!--<group>
         <item
             android:id="@+id/profile_options"
             android:title="@string/profile" />
@@ -13,6 +19,6 @@
             android:id="@+id/sms_notifications"
             android:checkable="true"
             android:title="@string/sms" />
-    </group>
+    </group>-->
 
 </menu>

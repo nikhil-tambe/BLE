@@ -34,6 +34,7 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.nikhil.bletrial.R;
+import com.nikhil.bletrial.v1.RepCountActivity;
 import com.nikhil.bletrial.app.AppConstants;
 import com.nikhil.bletrial.bluetooth.scan.DeviceListViewAdapter;
 import com.nikhil.bletrial.bluetooth.scan.DeviceScanPresenter;
@@ -68,6 +69,7 @@ import static com.nikhil.bletrial.bluetooth.utils.BTConstants.SCAN_FAILED;
 public class DeviceScanActivity extends AppCompatActivity implements IDeviceScanView,
         AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
+    private static final String TAG = "DeviceScanActivity";
     /**
      * Views from layout
      */
@@ -85,6 +87,8 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
     String deviceMac;
     GoogleApiClient googleApiClient;
     ProgressDialog progressDialog;
+    HashMap<String, ScanResult> hashMap;
+    DeviceListViewAdapter listAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,6 +100,7 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
         bluetoothAdapter = BluetoothAdapterSingleton.getAdapter();
         deviceList_ListView.setOnItemClickListener(this);
         progressDialog = new ProgressDialog(this);
+        hashMap = new HashMap<>();
     }
 
     @Override
@@ -125,7 +130,7 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
                     BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceMac);
                     if (device != null) {
                         deviceScanPresenter.connectDevice(device);
-                        startActivity(new Intent(this, DeviceActivity.class));
+                        startActivity(new Intent(this, RepCountActivity.class));
                         finish();
                     } else {
                         scanForBleDevice();
@@ -205,11 +210,14 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
     }
 
     @Override
-    public void onListLoadedSuccessfully(HashMap<String, ScanResult> hashMap) {
+    public void onListLoadedSuccessfully(HashMap<String, ScanResult> hashMapList) {
         progressDialog.dismiss();
         scanDevice_Button.setClickable(true);
         scanning_text.setText(R.string.select_device_text);
-        deviceList_ListView.setAdapter(new DeviceListViewAdapter(this, hashMap));
+        this.hashMap = hashMapList;
+        Log.d(TAG, "onListLoadedSuccessfully: " + hashMap.size());
+        listAdapter = new DeviceListViewAdapter(this, hashMap);
+        deviceList_ListView.setAdapter(listAdapter);
         deviceList_ListView.setVisibility(View.VISIBLE);
     }
 
@@ -231,6 +239,12 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
 
     @OnClick(R.id.scanDevice_Button)
     public void scanForBleDevice() {
+        if (hashMap.size() > 0) {
+            hashMap.clear();
+            listAdapter = new DeviceListViewAdapter(this, hashMap); //.notifyDataSetChanged();
+            deviceList_ListView.setAdapter(listAdapter);
+        }
+        Log.d(TAG, "scanForBleDevice: " + hashMap.size());
         scanDevice_Button.setClickable(false);
         scanning_text.setText(R.string.scanning_text);
         deviceScanPresenter.initiateScanProcess(bluetoothAdapter);
@@ -261,7 +275,7 @@ public class DeviceScanActivity extends AppCompatActivity implements IDeviceScan
             editor.putString(KEY_DEVICE_MANUFACTURER_ID, manufacturerID);
             editor.apply();
 
-            startActivity(new Intent(this, DeviceActivity.class)
+            startActivity(new Intent(this, RepCountActivity.class)
                     .putExtra(KEY_DEVICE_NAME, device.getName())
                     .putExtra(KEY_DEVICE_MAC, device.getAddress())
                     .putExtra(KEY_DEVICE_MANUFACTURER_ID, manufacturerID)

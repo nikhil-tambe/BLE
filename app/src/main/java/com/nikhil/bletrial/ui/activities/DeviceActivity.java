@@ -47,12 +47,7 @@ import static com.nikhil.bletrial.app.AppConstants.PermissionRequests.PERMISSION
 import static com.nikhil.bletrial.app.AppConstants.PermissionRequests.PERMISSION_REQUEST_CONTACTS_ACCESS;
 import static com.nikhil.bletrial.app.AppConstants.PermissionRequests.PERMISSION_REQUEST_SMS_ACCESS;
 import static com.nikhil.bletrial.app.AppConstants.SharedPreferences.SPF_DEVICE;
-import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_GYM_OFFLINE_READ;
-import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_GYM_ONLINE_START;
-import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_LIFE_LOG_OFFLINE_READ;
-import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_LIFE_LOG_ONLINE_START;
-import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_SESSION_COUNT;
-import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_SLEEP_READ;
+import static com.nikhil.bletrial.v1.ConstantsV1.COMMANDS.*;
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.ENABLE_BT_REQUEST;
 
 /**
@@ -107,7 +102,7 @@ public class DeviceActivity extends AppCompatActivity implements IDeviceView {
         /*service_list = (RecyclerView) findViewById(R.id.service_list);
         service_list.setLayoutManager(new LinearLayoutManager(this));*/
 
-        presenter = new DevicePresenter(this, this);
+        presenter = new DevicePresenter(this);
         bluetoothAdapter = BluetoothAdapterSingleton.getAdapter();
 
         SharedPreferences spf_device = getSharedPreferences(SPF_DEVICE, MODE_PRIVATE);
@@ -249,8 +244,8 @@ public class DeviceActivity extends AppCompatActivity implements IDeviceView {
     }
 
     @OnClick(R.id.connectivityIndication_ImageView)
-    public void indicatorClick(){
-        if (!isDeviceConnected){
+    public void indicatorClick() {
+        if (!isDeviceConnected) {
             connectivityIndication_ImageView.setBackgroundResource(R.drawable.dot_orange);
             connectDevice(bluetoothAdapter);
         }
@@ -287,7 +282,7 @@ public class DeviceActivity extends AppCompatActivity implements IDeviceView {
     }
 
     private void connectDevice(BluetoothAdapter adapter) {
-        if (adapter == null){
+        if (adapter == null) {
             adapter = BluetoothAdapterSingleton.getAdapter();
         }
         device = adapter.getRemoteDevice(deviceMac);

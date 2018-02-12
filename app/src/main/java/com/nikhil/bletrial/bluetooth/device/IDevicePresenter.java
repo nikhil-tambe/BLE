@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothDevice;
 
 public interface IDevicePresenter {
 
+    boolean isDeviceConnected();
     void connnectDevice(BluetoothDevice device);
     void sendCommand(BluetoothDevice device, int command);
 

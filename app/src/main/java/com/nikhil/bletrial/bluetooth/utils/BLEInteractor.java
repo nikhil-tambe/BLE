@@ -19,6 +19,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 
+import com.nikhil.bletrial.v1.ParseBytes;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -34,22 +36,17 @@ import static android.bluetooth.BluetoothGatt.GATT_SUCCESS;
 import static android.bluetooth.BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE;
 import static com.nikhil.bletrial.app.AppConstants.Storage.A_FOLDER;
 import static com.nikhil.bletrial.app.AppConstants.TAG;
-import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_GYM_OFFLINE_READ;
-import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_GYM_ONLINE_START;
-import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_LIFE_LOG_OFFLINE_READ;
-import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_LIFE_LOG_ONLINE_START;
-import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_SESSION_COUNT;
-import static com.nikhil.bletrial.bluetooth.utils.BTConstants.COMMANDS.COMMAND_SLEEP_READ;
+import static com.nikhil.bletrial.v1.ConstantsV1.COMMANDS.*;
 import static com.nikhil.bletrial.bluetooth.utils.BTConstants.SCAN_FAILED;
-import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.CHAR_NOTIFY_GYM;
-import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.CHAR_NOTIFY_OFFLINE_LIFE_LOG;
-import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.CHAR_NOTIFY_ONLINE_LIFE_LOG;
-import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.CHAR_NOTIFY_WALK;
-import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.UUID_CHAR_FIRMWARE_REVISION;
-import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.UUID_CHAR_WRITE;
-import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.UUID_CLIENT_CONFIG;
-import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.UUID_SERVICE_DEVICE_INFORMATION;
-import static com.nikhil.bletrial.bluetooth.utils.GattAttributes.UUID_SERVICE_WORKOUT;
+import static com.nikhil.bletrial.v1.GattAttributes.CHAR_NOTIFY_GYM;
+import static com.nikhil.bletrial.v1.GattAttributes.CHAR_NOTIFY_OFFLINE_LIFE_LOG;
+import static com.nikhil.bletrial.v1.GattAttributes.CHAR_NOTIFY_ONLINE_LIFE_LOG;
+import static com.nikhil.bletrial.v1.GattAttributes.CHAR_NOTIFY_WALK;
+import static com.nikhil.bletrial.v1.GattAttributes.UUID_CHAR_FIRMWARE_REVISION;
+import static com.nikhil.bletrial.v1.GattAttributes.UUID_CHAR_WRITE;
+import static com.nikhil.bletrial.v1.GattAttributes.UUID_CLIENT_CONFIG;
+import static com.nikhil.bletrial.v1.GattAttributes.UUID_SERVICE_DEVICE_INFORMATION;
+import static com.nikhil.bletrial.v1.GattAttributes.UUID_SERVICE_WORKOUT;
 
 /**
  * Created by nikhil on 27/03/17.
@@ -109,6 +106,7 @@ public class BLEInteractor {
     };
     private File rawFile;
     ParseBytes parseBytes;
+    boolean isDeviceConnected = false;
     /**
      * device.connectGatt(context, false, gattCallBack) refers to this gattCallBack.
      * <p>
@@ -125,6 +123,7 @@ public class BLEInteractor {
             switch (newState) {
                 case BluetoothProfile.STATE_CONNECTED:
                     Log.d(TAG, "onConnectionStateChange: STATE_CONNECTED");
+                    isDeviceConnected = true;
                     gatt.discoverServices();
                     if (wasDisconnected && fromGym){
                         executeCommand(COMMAND_GYM_ONLINE_START, bytes);
@@ -132,6 +131,7 @@ public class BLEInteractor {
                     break;
 
                 case BluetoothProfile.STATE_DISCONNECTED:
+                    isDeviceConnected = false;
                     wasDisconnected = true;
                     Log.d(TAG, "onConnectionStateChange: STATE_DISCONNECTED");
                     break;
@@ -156,7 +156,7 @@ public class BLEInteractor {
                 @Override
                 public void run() {
                     Log.d(TAG, "run: called");
-                    checkBytes(COMMAND_GYM_ONLINE_START, "AA0055AA");
+                    sendByteCommand(COMMAND_GYM_ONLINE_START, "AA0055AA");
                 }
             }, 5000);*/
 
@@ -193,8 +193,7 @@ public class BLEInteractor {
         }
     };
 
-    public BLEInteractor(OnBLEInteractorFinishedListener listener, Context context) {
-        this.context = context;
+    public BLEInteractor(OnBLEInteractorFinishedListener listener) {
         this.listener = listener;
     }
 
@@ -246,7 +245,11 @@ public class BLEInteractor {
         bluetoothGatt = device.connectGatt(context, false, gattCallBack);
     }
 
-    public boolean checkBytes(String channel, String s) {
+    public boolean isDeviceConnected(){
+        return isDeviceConnected;
+    }
+
+    public boolean sendByteCommand(String channel, String s) {
         if (s == null) {
             return false;
         } else if (s.length() % 2 != 0) {

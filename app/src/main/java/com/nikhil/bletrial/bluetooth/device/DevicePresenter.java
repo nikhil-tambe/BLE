@@ -29,12 +29,15 @@ public class DevicePresenter implements IDevicePresenter, OnBLEInteractorFinishe
 
     private BLEInteractor interactor;
     private WeakReference<IDeviceView> view;
-    private Context context;
 
-    public DevicePresenter(IDeviceView view, Context context) {
-        this.view = new WeakReference<IDeviceView>(view);
-        this.context = context;
-        interactor = new BLEInteractor(this, context);
+    public DevicePresenter(IDeviceView view) {
+        this.view = new WeakReference<>(view);
+        interactor = new BLEInteractor(this);
+    }
+
+    @Override
+    public boolean isDeviceConnected() {
+        return interactor.isDeviceConnected();
     }
 
     @Override
@@ -42,6 +45,7 @@ public class DevicePresenter implements IDevicePresenter, OnBLEInteractorFinishe
         interactor.connectDevice(device);
     }
 
+    @Deprecated
     @Override
     public void sendCommand(BluetoothDevice device, int command) {
         //interactor.sendCommand(device, command);
@@ -50,7 +54,7 @@ public class DevicePresenter implements IDevicePresenter, OnBLEInteractorFinishe
     @Override
     public boolean checkBytes(Object channel, Object bytes) {
         if (bytes != null) {
-            return interactor.checkBytes(String.valueOf(channel),
+            return interactor.sendByteCommand(String.valueOf(channel),
                     bytes.toString().toUpperCase());
         } else {
             return false;

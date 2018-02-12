@@ -29,7 +29,7 @@ public class DeviceScanPresenter implements IDeviceScanPresenter, OnBLEInteracto
 
     public DeviceScanPresenter(IDeviceScanView view, Context context) {
         this.view = view;
-        interactor = new BLEInteractor(this, context);
+        interactor = new BLEInteractor(this);
         this.context = context;
     }
 
